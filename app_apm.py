@@ -7,7 +7,8 @@ from elasticapm.contrib.flask import ElasticAPM
 from dotenv import load_dotenv
 import elasticapm
 
-load_dotenv()
+# Load environment variables from .env.apm
+load_dotenv(dotenv_path='.apm.env')
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Configure Elastic APM
 app.config['ELASTIC_APM'] = {
-    'SERVICE_NAME': 'my-flask-app',
+    'SERVICE_NAME': 'my-flask-app-apm',
     'API_KEY': os.environ.get('ELASTIC_APM_API_KEY'),
     'SERVER_URL': os.environ.get('ELASTIC_APM_SERVER_URL'),
     'ENVIRONMENT': 'development',
@@ -28,7 +29,7 @@ apm = ElasticAPM(app)
 @app.route('/')
 def hello_world():
     logger.info("Root endpoint was called")
-    return 'Hello, World!'
+    return 'Hello, World from APM App!'
 
 @app.route('/generate-data')
 def generate_data():
@@ -68,5 +69,5 @@ def generate_data():
     return f'Generated approximately {total_docs} documents for Elastic APM.'
 
 if __name__ == '__main__':
-    print("--- STARTING FLASK SERVER ---")
-    app.run(debug=True, port=5001)
+    print("--- STARTING FLASK SERVER (APM) ---")
+    app.run(debug=True, port=5002)

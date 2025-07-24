@@ -1,47 +1,109 @@
-# Flask APM Project
+# Python Instrumentation Project for Elastic
 
-This is a minimal Flask project configured to send APM data to an Elastic APM server.
+This project demonstrates two different ways to instrument a Python application to send telemetry data to Elastic Observability:
 
-## Setup
+1.  **`app_apm.py`**: A Flask application instrumented with the Elastic APM Python Agent.
+2.  **`app_otel.py`**: A simple Python script instrumented with OpenTelemetry.
 
-1.  **Create and activate a conda environment:**
+Both applications are configured to generate traces, logs, and errors. Follow the instructions below to run either version.
 
-    ```bash
-    conda create --name flask-apm-env python=3.9
-    conda activate flask-apm-env
-    ```
+## Running the APM Agent Application
 
-2.  **Install the dependencies:**
+This project includes a Flask application, `app_apm.py`, that is instrumented with the Elastic APM agent.
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 1. Install Dependencies
 
-3.  **Configure your environment variables:**
-
-    Copy the `.env.example` file to a new file named `.env`:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-    Then, open the `.env` file and add your Elastic APM server URL and secret token.
-
-## Running the application
-
-To run the Flask application, use the following command:
+If you haven't already, install the required Python packages:
 
 ```bash
-python app.py
+pip3 install -r requirements.txt
 ```
 
-The application will start on `http://127.0.0.1:5000`.
+### 2. Configure APM Environment Variables
 
-### Generate APM data
+Copy the example environment file to a new `.apm.env` file:
 
-You can generate APM data by visiting the `/generate-data` endpoint in your browser or using a tool like `curl`.
+```bash
+cp .apm.env.example .apm.env
+```
 
-URL: `http://127.0.0.1:5000/generate-data`
+Next, open `.apm.env` and add your Elastic APM server URL and API key.
 
+### 3. Run the Application
 
+A helper script, `run_apm.sh`, is provided to export the environment variables and run the application.
 
+First, make the script executable:
+
+```bash
+chmod +x run_apm.sh
+```
+
+Then, run the script:
+
+```bash
+./run_apm.sh
+```
+
+The application will start on `http://127.0.0.1:5002`.
+
+### 4. Generate APM Data
+
+You can generate APM data by visiting the `/generate-data` endpoint.
+
+URL: `http://127.0.0.1:5002/generate-data`
+
+---
+
+## Running the OpenTelemetry Application
+
+This project also includes a script, `app_otel.py`, that uses OpenTelemetry for instrumentation instead of the Elastic APM agent.
+
+### 1. Install Dependencies
+
+If you haven't already, install the required Python packages:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+### 2. Configure OpenTelemetry Environment Variables
+
+Copy the example environment file to a new `.otel.env` file:
+
+```bash
+cp .otel.env.example .otel.env
+```
+
+Next, open `.otel.env` and fill in the required values for the following variables:
+
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: Your Elastic APM OTLP endpoint URL.
+- `OTEL_EXPORTER_OTLP_HEADERS`: Your Elastic APM secret token, formatted as `Authorization=Bearer YOUR_TOKEN`. Use %20 to represent the space character.
+
+The other variables are pre-configured for a typical setup:
+
+- `OTEL_RESOURCE_ATTRIBUTES`: Sets the service name, version, and environment.
+- `OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED`: Enables automatic log instrumentation.
+- `OTEL_PYTHON_LOG_CORRELATION`: Injects trace context into logs.
+- `OTEL_METRICS_EXPORTER`: Configures metrics to be sent via OTLP.
+- `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED`: Enables system-level metrics.
+- `OTEL_METRIC_EXPORT_INTERVAL`: Sets the metric export interval to 5 seconds.
+- `OTEL_LOGS_EXPORTER`: Sends logs to both OTLP and the console.
+
+### 3. Run the Application
+
+A helper script, `run_otel.sh`, is provided to export the environment variables and run the application with OpenTelemetry auto-instrumentation.
+
+First, make the script executable:
+
+```bash
+chmod +x run_otel.sh
+```
+
+Then, run the script:
+
+```bash
+./run_otel.sh
+```
+
+This will start the `app_otel.py` script, and you will see logs, traces, and metrics being sent to your Elastic deployment.

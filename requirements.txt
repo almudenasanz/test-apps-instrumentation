@@ -1,3 +1,4 @@
 Flask
 elastic-apm[flask]
 python-dotenv
+elastic-opentelemetry
